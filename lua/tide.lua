@@ -11,6 +11,12 @@ M.setup = function(options)
   api.attach_dynamic_mappings()
 end
 
+M.close = function()
+  if state.current_state.popup then
+    panel.close()
+  end
+end
+
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
   callback = function()
     if state.current_state.popup then
