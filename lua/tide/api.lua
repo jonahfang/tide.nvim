@@ -50,6 +50,7 @@ M.delete_tag = function(tag)
 end
 
 M.open_tag = function(tag)
+  panel.close()
   vim.cmd(string.format(":edit %s", state.current_state.tags[tag]))
 end
 
