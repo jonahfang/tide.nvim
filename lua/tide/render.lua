@@ -92,6 +92,7 @@ end
 M.render_file = function(ico, text, tag)
   M.render_line(NuiLine({
     NuiText("  "),
+    NuiText(";"),
     NuiText(tag, "TideHotKey"),
     NuiText(" "),
     NuiText(text, "TideLine"),
