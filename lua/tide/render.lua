@@ -90,12 +90,11 @@ M.render_comment = function(text)
 end
 
 M.render_file = function(ico, text, tag)
-  local full_text = string.format("  %s %s", ico or "", text)
   M.render_line(NuiLine({
-    NuiText(full_text, "TideLine"),
-    NuiText(string.rep(" ", state.options.width - #full_text - #tag)),
-    NuiText(tag, "TideHotKey"),
     NuiText("  "),
+    NuiText(tag, "TideHotKey"),
+    NuiText(" "),
+    NuiText(text, "TideLine"),
   }))
 end
 
