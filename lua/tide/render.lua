@@ -90,13 +90,39 @@ M.render_comment = function(text)
 end
 
 M.render_file = function(ico, text, tag)
-  M.render_line(NuiLine({
+  -- Split the text into two parts at the last occurrence of '/'
+  local parts = {}
+  for part in string.gmatch(text, "[^/]+") do
+    table.insert(parts, part)
+  end
+
+  local line = NuiLine({
     NuiText("  "),
     NuiText(";"),
     NuiText(tag, "TideHotKey"),
     NuiText(" "),
-    NuiText(text, "TideLine"),
-  }))
+  })
+
+  if #parts > 1 then
+    -- Join all parts except the last one (path) and highlight as "TidePath"
+    local path = table.concat(parts, "/", 1, #parts - 1)
+    line:append(NuiText(path, "TideComment"))
+    -- Highlight the last part (filename) as "TideLine"
+    line:append(NuiText("/" .. parts[#parts], "TideLine"))
+  else
+    -- If no '/' is found, treat the entire text as "TideLine"
+    line:append(NuiText(text, "TideLine"))
+  end
+
+  M.render_line(line)
+
+  -- M.render_line(NuiLine({
+  --   NuiText("  "),
+  --   NuiText(";"),
+  --   NuiText(tag, "TideHotKey"),
+  --   NuiText(" "),
+  --   NuiText(text, "TideLine"),
+  -- }))
 end
 
 M.render_shortcut = function(ico, text, tag, hl)
