@@ -106,7 +106,7 @@ M.render_file = function(ico, text, tag)
   if #parts > 1 then
     -- Join all parts except the last one (path) and highlight as "TidePath"
     local path = table.concat(parts, "/", 1, #parts - 1)
-    line:append(NuiText(path, "TideComment"))
+    line:append(NuiText(path, "AlphabetPath"))
     -- Highlight the last part (filename) as "TideLine"
     line:append(NuiText("/" .. parts[#parts], "TideLine"))
   else
