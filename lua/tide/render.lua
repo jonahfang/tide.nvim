@@ -34,9 +34,21 @@ M.render = function()
     table.insert(sorted_tags, {tag = tag, file = file})
   end
 
-  -- Sort tags by their associated file paths
+  -- sort by last part of path and file name
   table.sort(sorted_tags, function(a, b)
-    return a.file:lower() < b.file:lower()
+    local parts_a = {}
+    for part in a.file:gmatch("[^/]+") do
+      table.insert(parts_a, part)
+    end
+    local sort_key_a = (#parts_a >= 2) and (parts_a[#parts_a-1] .. "/" .. parts_a[#parts_a]) or a.file
+
+    local parts_b = {}
+    for part in b.file:gmatch("[^/]+") do
+      table.insert(parts_b, part)
+    end
+    local sort_key_b = (#parts_b >= 2) and (parts_b[#parts_b-1] .. "/" .. parts_b[#parts_b]) or b.file
+
+    return sort_key_a:lower() < sort_key_b:lower()
   end)
 
   -- Render files in sorted order
