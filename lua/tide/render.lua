@@ -29,9 +29,19 @@ M.render = function()
 
   local unique_names = utils.generate_unique_names(files)
 
+  local sorted_tags = {}
   for tag, file in pairs(state.current_state.tags) do
-    state.current_state.tags[tag] = file
-    M.render_file(utils.get_icon(file), unique_names[file], tag)
+    table.insert(sorted_tags, {tag = tag, file = file})
+  end
+
+  -- Sort tags by their associated file paths
+  table.sort(sorted_tags, function(a, b)
+    return a.file:lower() < b.file:lower()
+  end)
+
+  -- Render files in sorted order
+  for _, tag_file in ipairs(sorted_tags) do
+    M.render_file(utils.get_icon(tag_file.file), unique_names[tag_file.file], tag_file.tag)
   end
 
   for _ = state.current_state.linenr, state.current_state.height - MENU_HEIGHT do
