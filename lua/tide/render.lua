@@ -29,31 +29,25 @@ M.render = function()
 
   local unique_names = utils.generate_unique_names(files)
 
-  local sorted_tags = {}
+  -- Collect tags and their display names for sorting
+  local tag_items = {}
   for tag, file in pairs(state.current_state.tags) do
-    table.insert(sorted_tags, {tag = tag, file = file})
+    state.current_state.tags[tag] = file
+    table.insert(tag_items, {
+      tag = tag,
+      file = file,
+      display_name = unique_names[file]
+    })
   end
 
-  -- sort by last part of path and file name
-  table.sort(sorted_tags, function(a, b)
-    local parts_a = {}
-    for part in a.file:gmatch("[^/]+") do
-      table.insert(parts_a, part)
-    end
-    local sort_key_a = (#parts_a >= 2) and (parts_a[#parts_a-1] .. "/" .. parts_a[#parts_a]) or a.file
-
-    local parts_b = {}
-    for part in b.file:gmatch("[^/]+") do
-      table.insert(parts_b, part)
-    end
-    local sort_key_b = (#parts_b >= 2) and (parts_b[#parts_b-1] .. "/" .. parts_b[#parts_b]) or b.file
-
-    return sort_key_a:lower() < sort_key_b:lower()
+  -- Sort by display name
+  table.sort(tag_items, function(a, b)
+    return a.display_name < b.display_name
   end)
 
-  -- Render files in sorted order
-  for _, tag_file in ipairs(sorted_tags) do
-    M.render_file(utils.get_icon(tag_file.file), unique_names[tag_file.file], tag_file.tag)
+  -- Render in sorted order
+  for _, item in ipairs(tag_items) do
+    M.render_file(utils.get_icon(item.file), item.display_name, item.tag)
   end
 
   for _ = state.current_state.linenr, state.current_state.height - MENU_HEIGHT do
@@ -112,39 +106,13 @@ M.render_comment = function(text)
 end
 
 M.render_file = function(ico, text, tag)
-  -- Split the text into two parts at the last occurrence of '/'
-  local parts = {}
-  for part in string.gmatch(text, "[^/]+") do
-    table.insert(parts, part)
-  end
-
-  local line = NuiLine({
+  M.render_line(NuiLine({
     NuiText("  "),
     NuiText(";"),
     NuiText(tag, "TideHotKey"),
     NuiText(" "),
-  })
-
-  if #parts > 1 then
-    -- Join all parts except the last one (path) and highlight as "TidePath"
-    local path = table.concat(parts, "/", 1, #parts - 1)
-    line:append(NuiText(path .. "/", "AlphabetPath"))
-    -- Highlight the last part (filename) as "TideLine"
-    line:append(NuiText(parts[#parts], "TideLine"))
-  else
-    -- If no '/' is found, treat the entire text as "TideLine"
-    line:append(NuiText(text, "TideLine"))
-  end
-
-  M.render_line(line)
-
-  -- M.render_line(NuiLine({
-  --   NuiText("  "),
-  --   NuiText(";"),
-  --   NuiText(tag, "TideHotKey"),
-  --   NuiText(" "),
-  --   NuiText(text, "TideLine"),
-  -- }))
+    NuiText(text, "TideLine"),
+  }))
 end
 
 M.render_shortcut = function(ico, text, tag, hl)
